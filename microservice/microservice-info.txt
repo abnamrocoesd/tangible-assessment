@@ -1,0 +1,55 @@
+A kubernetes cluster can be used to set up microservices
+
+The following needs to be done:
+    - containerise two applications "api" and "microservice".
+    - create two kubernetes deployments - for "api" and "microservice"
+
+Let's consider the process for "microservice" (for "api" it will be similar)
+(The repo "ebd622" is used here just an example)
+
+1. Build and tag a docker image:
+
+    docker build -t ebd622/microservice .
+    docker tag <IMAGE_ID> ebd622/microservice:<TAG>
+
+2. Push the image to the DockerHub:
+
+    docker push ebd622/microservice:<TAG>
+
+3. Create a kubernetes ConfigMap (optional)
+   The "microservice" uses the env-variable PERSONS_API_URL. This can be configured in a ConfigMap
+
+   3.1 Run the command to create a ConfigMap:
+   
+        kubectl create configmap microsrv-config --from-literal=PERSONS_API_URL=http://....
+
+4. Create a kubernetes deployment:
+
+    4.1 Run the command:
+    kubectl run microservice --image=ebd622/microservice:<TAG> -o yaml --dry-run > microservice.yaml
+
+    This will generate microservice.yaml
+
+    4.2 Edit  microservice.yaml
+    The section "spec/containers" needs to be modified to provide some args:
+
+    spec:
+      containers:
+      - args:
+        - mvn
+        - clean
+        - spring-boot:run
+
+    Also we may use 3 replicas (Fault Tolerance):
+        spec:
+            replicas: 3
+
+    4.3 Add a ConfigMap to microservice.yaml (optional)            
+
+    4.4 Run the command to create a deployment:
+
+        kubect create -f microservice.yaml
+
+        This will create a new "microservice"-kubernetes component with 3 replica-sets
+
+5. The same steps (1-4) needs to be done for the application "api" to deploy into a kubernetes cluster

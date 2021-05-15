@@ -19,7 +19,7 @@
         <module>service</module>
         <module>api</module>
         <module>cmd</module>
-        <!--module>microservice</module-->
+        <module>microservice</module>
     </modules>
 
 </project>
