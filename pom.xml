@@ -17,7 +17,7 @@
     <modules>
         <module>year-generator</module>
         <module>service</module>
-        <module>web</module>
+        <module>api</module>
         <module>cmd</module>
         <module>microservice</module>
     </modules>
